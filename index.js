@@ -67,11 +67,7 @@
         this.images = {};
         this.imagesLoaded = 0;
 
-        if (this.isDisabled()) {
-            this.setupDisabledRunner();
-        } else {
-            this.loadImages();
-        }
+        this.loadImages();
     }
     window['Runner'] = Runner;
 
@@ -220,33 +216,6 @@
 
 
     Runner.prototype = {
-        /**
-         * Whether the easter egg has been disabled. CrOS enterprise enrolled devices.
-         * @return {boolean}
-         */
-        isDisabled: function () {
-            // return loadTimeData && loadTimeData.valueExists('disabledEasterEgg');
-            return false;
-        },
-
-        /**
-         * For disabled instances, set up a snackbar with the disabled message.
-         */
-        setupDisabledRunner: function () {
-            this.containerEl = document.createElement('div');
-            this.containerEl.className = Runner.classes.SNACKBAR;
-            this.containerEl.textContent = loadTimeData.getValue('disabledEasterEgg');
-            this.outerContainerEl.appendChild(this.containerEl);
-
-            // Show notification when the activation key is pressed.
-            document.addEventListener(Runner.events.KEYDOWN, function (e) {
-                if (Runner.keycodes.JUMP[e.keyCode]) {
-                    this.containerEl.classList.add(Runner.classes.SNACKBAR_SHOW);
-                    document.querySelector('.icon').classList.add('icon-disabled');
-                }
-            }.bind(this));
-        },
-
         /**
          * Setting individual settings for debugging.
          * @param {string} setting
@@ -672,9 +641,6 @@
                         this.loadSounds();
                         this.playing = true;
                         this.update();
-                        if (window.errorPageController) {
-                            errorPageController.trackEasterEgg();
-                        }
                     }
                     //  Play sound effect and jump on starting the game for the first time.
                     if (!this.tRex.jumping && !this.tRex.ducking) {

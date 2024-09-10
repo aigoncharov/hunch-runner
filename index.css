@@ -15,11 +15,6 @@ html, body {
   display: inline-block;
 }
 
-.icon-offline {
-  content: -webkit-image-set( url(assets/default_100_percent/100-error-offline.png) 1x);
-  position: relative;
-}
-
 .hidden {
   display: none;
 }
