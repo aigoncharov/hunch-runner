@@ -88,7 +88,7 @@
     var IS_IOS = /iPad|iPhone|iPod/.test(window.navigator.platform);
 
     /** @const */
-    var IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
+    var IS_MOBILE = true || /Android/.test(window.navigator.userAgent) || IS_IOS;
 
     /** @const */
     var IS_TOUCH_ENABLED = 'ontouchstart' in window;
@@ -337,9 +337,9 @@
 
             this.outerContainerEl.appendChild(this.containerEl);
 
-            if (IS_MOBILE) {
-                this.createTouchController();
-            }
+            // if (IS_MOBILE) {
+            //     this.createTouchController();
+            // }
 
             this.update();
 
@@ -593,17 +593,11 @@
             // Keys.
             document.addEventListener(Runner.events.KEYDOWN, this);
             document.addEventListener(Runner.events.KEYUP, this);
-
-            if (IS_MOBILE) {
-                // Mobile only touch devices.
-                this.touchController.addEventListener(Runner.events.TOUCHSTART, this);
-                this.touchController.addEventListener(Runner.events.TOUCHEND, this);
-                this.containerEl.addEventListener(Runner.events.TOUCHSTART, this);
-            } else {
-                // Mouse.
-                document.addEventListener(Runner.events.MOUSEDOWN, this);
-                document.addEventListener(Runner.events.MOUSEUP, this);
-            }
+            document.addEventListener(Runner.events.TOUCHSTART, this);
+            document.addEventListener(Runner.events.TOUCHEND, this);
+            document.addEventListener(Runner.events.TOUCHSTART, this);
+            document.addEventListener(Runner.events.MOUSEDOWN, this);
+            document.addEventListener(Runner.events.MOUSEUP, this);
         },
 
         /**
@@ -612,15 +606,11 @@
         stopListening: function () {
             document.removeEventListener(Runner.events.KEYDOWN, this);
             document.removeEventListener(Runner.events.KEYUP, this);
-
-            if (IS_MOBILE) {
-                this.touchController.removeEventListener(Runner.events.TOUCHSTART, this);
-                this.touchController.removeEventListener(Runner.events.TOUCHEND, this);
-                this.containerEl.removeEventListener(Runner.events.TOUCHSTART, this);
-            } else {
-                document.removeEventListener(Runner.events.MOUSEDOWN, this);
-                document.removeEventListener(Runner.events.MOUSEUP, this);
-            }
+            document.removeEventListener(Runner.events.TOUCHSTART, this);
+            document.removeEventListener(Runner.events.TOUCHEND, this);
+            document.removeEventListener(Runner.events.TOUCHSTART, this);
+            document.removeEventListener(Runner.events.MOUSEDOWN, this);
+            document.removeEventListener(Runner.events.MOUSEUP, this);
         },
 
         /**
