@@ -341,7 +341,6 @@
                 this.createTouchController();
             }
 
-            this.startListening();
             this.update();
 
             window.addEventListener(Runner.events.RESIZE,
@@ -2679,7 +2678,8 @@
 
 
 function onDocumentLoad() {
-    new Runner('.interstitial-wrapper');
+    const runner = new Runner('.interstitial-wrapper');
+    window.runner = runner;
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
