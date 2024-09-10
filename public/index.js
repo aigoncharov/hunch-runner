@@ -744,7 +744,7 @@
                 method: "POST",
                 body: JSON.stringify({
                     players: [
-                        {score: this.distanceRan, name: window.nickname}
+                        {score: this.distanceMeter.getActualDistance(this.distanceRan), name: window.nickname}
                     ]
                 }),
                 headers: {
