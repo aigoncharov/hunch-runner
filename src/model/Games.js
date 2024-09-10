@@ -9,6 +9,8 @@ var _ = require('underscore'),
 module.exports = BaseModel.extend({
 
    saveGame: function(game) {
+      // console.log(game)
+
       var nameGenerator = new NameGenerator();
 
       if (!_.isObject(game)) {

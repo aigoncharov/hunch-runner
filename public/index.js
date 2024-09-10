@@ -746,7 +746,10 @@
                     players: [
                         {score: this.distanceRan, name: window.nickname}
                     ]
-                })
+                }),
+                headers: {
+                    "Content-Type":"application/json"
+                }
                 })
 
             // Game over panel.
@@ -1851,7 +1854,7 @@
             targetWidth, targetHeight
         );
 
-        console.log("HunchBanner.draw", this)
+        // console.log("HunchBanner.draw", this)
     }
 
 

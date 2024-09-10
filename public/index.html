@@ -33,6 +33,7 @@
           autofocus
         />
       </form>
+      <ul id="scores"></ul>
       <!-- <div class="niokbutton" onclick="okbuttonsend()"></div> -->
     </div>
     <div id="main-frame-error" class="interstitial-wrapper">
@@ -80,5 +81,19 @@
       document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 32 }));
       return false;
     }
+
+    fetch("/top-scores").then(async (value) => {
+      console.log("top-scores");
+      const res = await value.json();
+      console.log("top-scores", res);
+
+      const container = document.getElementById("scores");
+
+      for (const entry of res) {
+        const el = document.createElement("li");
+        el.textContent = `${entry.score} (${entry.name})`;
+        container.append(el);
+      }
+    });
   </script>
 </html>
