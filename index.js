@@ -37,6 +37,8 @@
 
         this.highestScore = 0;
 
+        this.hunchBanner = null;
+
         this.time = 0;
         this.runningTime = 0;
         this.msPerFrame = 1000 / FPS;
@@ -85,9 +87,6 @@
      * @const
      */
     var FPS = 60;
-
-    /** @const */
-    var IS_HIDPI = window.devicePixelRatio > 1;
 
     /** @const */
     var IS_IOS = /iPad|iPhone|iPod/.test(window.navigator.platform);
@@ -170,21 +169,10 @@
             PTERODACTYL: { x: 134, y: 2 },
             RESTART: { x: 2, y: 2 },
             TEXT_SPRITE: { x: 655, y: 2 },
+            HUNCH_SPRITE: { x: 655, y: 30 },
             TREX: { x: 848, y: 2 },
             STAR: { x: 645, y: 2 }
         },
-        HDPI: {
-            CACTUS_LARGE: { x: 652, y: 2 },
-            CACTUS_SMALL: { x: 446, y: 2 },
-            CLOUD: { x: 166, y: 2 },
-            HORIZON: { x: 2, y: 104 },
-            MOON: { x: 954, y: 2 },
-            PTERODACTYL: { x: 260, y: 2 },
-            RESTART: { x: 2, y: 2 },
-            TEXT_SPRITE: { x: 1294, y: 2 },
-            TREX: { x: 1678, y: 2 },
-            STAR: { x: 1276, y: 2 }
-        }
     };
 
 
@@ -275,7 +263,7 @@
                         this.tRex.config[setting] = value;
                         break;
                     case 'INITIAL_JUMP_VELOCITY':
-                        this.tRex.setJumpVelocity(value);
+                        this.tRex.setJFumpVelocity(value);
                         break;
                     case 'SPEED':
                         this.setSpeed(value);
@@ -289,13 +277,8 @@
          * definition.
          */
         loadImages: function () {
-            if (IS_HIDPI) {
-                Runner.imageSprite = document.getElementById('offline-resources-2x');
-                this.spriteDef = Runner.spriteDefinition.HDPI;
-            } else {
-                Runner.imageSprite = document.getElementById('offline-resources-1x');
-                this.spriteDef = Runner.spriteDefinition.LDPI;
-            }
+            Runner.imageSprite = document.getElementById('offline-resources-1x');
+            this.spriteDef = Runner.spriteDefinition.LDPI;
 
             if (Runner.imageSprite.complete) {
                 this.init();
@@ -378,6 +361,8 @@
             this.distanceMeter = new DistanceMeter(this.canvas,
                 this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
 
+            this.hunchBanner = new HunchBanner(this.canvas, this.spriteDef.HUNCH_SPRITE, this.dimensions.WIDTH)
+
             // Draw t-rex
             this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
 
@@ -441,6 +426,7 @@
                 this.clearCanvas();
                 this.horizon.update(0, 0, true);
                 this.tRex.update(0);
+                this.hunchBanner.draw();
 
                 // Outer container and distance meter.
                 if (this.playing || this.crashed || this.paused) {
@@ -537,6 +523,8 @@
 
             if (this.playing) {
                 this.clearCanvas();
+
+                this.hunchBanner.draw();
 
                 if (this.tRex.jumping) {
                     this.tRex.updateJump(deltaTime);
@@ -1101,15 +1089,6 @@
             var restartTargetX = centerX - (dimensions.RESTART_WIDTH / 2);
             var restartTargetY = this.canvasDimensions.HEIGHT / 2;
 
-            if (IS_HIDPI) {
-                textSourceY *= 2;
-                textSourceX *= 2;
-                textSourceWidth *= 2;
-                textSourceHeight *= 2;
-                restartSourceWidth *= 2;
-                restartSourceHeight *= 2;
-            }
-
             textSourceX += this.textImgPos.x;
             textSourceY += this.textImgPos.y;
 
@@ -1368,11 +1347,6 @@
             draw: function () {
                 var sourceWidth = this.typeConfig.width;
                 var sourceHeight = this.typeConfig.height;
-
-                if (IS_HIDPI) {
-                    sourceWidth = sourceWidth * 2;
-                    sourceHeight = sourceHeight * 2;
-                }
 
                 // X position in sprite.
                 var sourceX = (sourceWidth * this.size) * (0.5 * (this.size - 1)) +
@@ -1725,13 +1699,6 @@
                 this.config.WIDTH_DUCK : this.config.WIDTH;
             var sourceHeight = this.config.HEIGHT;
 
-            if (IS_HIDPI) {
-                sourceX *= 2;
-                sourceY *= 2;
-                sourceWidth *= 2;
-                sourceHeight *= 2;
-            }
-
             // Adjustments for sprite sheet position.
             sourceX += this.spritePos.x;
             sourceY += this.spritePos.y;
@@ -1880,6 +1847,39 @@
         }
     };
 
+    function HunchBanner(canvas, spritePos, canvasWidth) {
+        this.canvas = canvas;
+        this.canvasCtx = canvas.getContext('2d');
+        this.image = Runner.imageSprite;
+        this.spritePos = spritePos;
+        this.x = canvasWidth - HunchBanner.dimensions.WIDTH;
+        this.y = 30;
+    };
+    HunchBanner.dimensions = {
+        WIDTH: 140,
+        HEIGHT: 13,
+    };
+
+    HunchBanner.prototype.draw = function() {
+        var sourceWidth = HunchBanner.dimensions.WIDTH;
+        var sourceHeight = HunchBanner.dimensions.HEIGHT;
+        var sourceX = this.spritePos.x;
+        var sourceY = this.spritePos.y;
+
+        var targetX = this.x;
+        var targetY = this.y;
+        var targetWidth = HunchBanner.dimensions.WIDTH;
+        var targetHeight = HunchBanner.dimensions.HEIGHT;
+
+        this.canvasCtx.drawImage(this.image, sourceX, sourceY,
+            sourceWidth, sourceHeight,
+            targetX, targetY,
+            targetWidth, targetHeight
+        );
+
+        console.log("HunchBanner.draw", this)
+    }
+
 
     //******************************************************************************
 
@@ -2000,13 +2000,6 @@
             var targetY = this.y;
             var targetWidth = DistanceMeter.dimensions.WIDTH;
             var targetHeight = DistanceMeter.dimensions.HEIGHT;
-
-            // For high DPI we 2x source values.
-            if (IS_HIDPI) {
-                sourceWidth *= 2;
-                sourceHeight *= 2;
-                sourceX *= 2;
-            }
 
             sourceX += this.spritePos.x;
             sourceY += this.spritePos.y;
@@ -2198,11 +2191,6 @@
             var sourceWidth = Cloud.config.WIDTH;
             var sourceHeight = Cloud.config.HEIGHT;
 
-            if (IS_HIDPI) {
-                sourceWidth = sourceWidth * 2;
-                sourceHeight = sourceHeight * 2;
-            }
-
             this.canvasCtx.drawImage(Runner.imageSprite, this.spritePos.x,
                 this.spritePos.y,
                 sourceWidth, sourceHeight,
@@ -2333,15 +2321,6 @@
             var starSize = NightMode.config.STAR_SIZE;
             var starSourceX = Runner.spriteDefinition.LDPI.STAR.x;
 
-            if (IS_HIDPI) {
-                moonSourceWidth *= 2;
-                moonSourceHeight *= 2;
-                moonSourceX = this.spritePos.x +
-                    (NightMode.phases[this.currentPhase] * 2);
-                starSize *= 2;
-                starSourceX = Runner.spriteDefinition.HDPI.STAR.x;
-            }
-
             this.canvasCtx.save();
             this.canvasCtx.globalAlpha = this.opacity;
 
@@ -2375,13 +2354,8 @@
                 this.stars[i].x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
                 this.stars[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
 
-                if (IS_HIDPI) {
-                    this.stars[i].sourceY = Runner.spriteDefinition.HDPI.STAR.y +
-                        NightMode.config.STAR_SIZE * 2 * i;
-                } else {
-                    this.stars[i].sourceY = Runner.spriteDefinition.LDPI.STAR.y +
-                        NightMode.config.STAR_SIZE * i;
-                }
+                this.stars[i].sourceY = Runner.spriteDefinition.LDPI.STAR.y +
+                    NightMode.config.STAR_SIZE * i;
             }
         },
 
@@ -2438,15 +2412,8 @@
         setSourceDimensions: function () {
 
             for (var dimension in HorizonLine.dimensions) {
-                if (IS_HIDPI) {
-                    if (dimension != 'YPOS') {
-                        this.sourceDimensions[dimension] =
-                            HorizonLine.dimensions[dimension] * 2;
-                    }
-                } else {
-                    this.sourceDimensions[dimension] =
-                        HorizonLine.dimensions[dimension];
-                }
+                this.sourceDimensions[dimension] =
+                    HorizonLine.dimensions[dimension];
                 this.dimensions[dimension] = HorizonLine.dimensions[dimension];
             }
 
