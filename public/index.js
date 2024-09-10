@@ -740,6 +740,15 @@
 
             this.tRex.update(100, Trex.status.CRASHED);
 
+            fetch("/games", {
+                method: "POST",
+                body: JSON.stringify({
+                    players: [
+                        {score: this.distanceRan, name: window.nickname}
+                    ]
+                })
+                })
+
             // Game over panel.
             if (!this.gameOverPanel) {
                 this.gameOverPanel = new GameOverPanel(this.canvas,
